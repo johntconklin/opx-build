@@ -4,8 +4,31 @@
 # the default template
 #
 # read pbuilderrc.5 document for notes on specific options.
-MIRRORSITE=http://httpredir.debian.org/debian
+
+case "${DIST}" in
+  jessie|stretch|sid)
+    MIRRORSITE=http://httpredir.debian.org/debian
+    COMPONENTS="main contrib non-free"
+    : ${ARCH:="amd64"}
+    ;;
+  xenial)
+    MIRRORSITE=http://archive.ubuntu.com/ubuntu
+    COMPONENTS="main restricted universe multiverse"
+    : ${ARCH:="amd64"}
+    ;;
+  *)
+    echo "Unknown DIST: ${DIST}" 1>&2
+    exit 1
+    ;;
+esac
+
 HOOKDIR=/var/cache/pbuilder/hook.d
-OTHERMIRROR="deb [trusted=yes] file:///var/cache/pbuilder/result ./"
-BINDMOUNTS=/var/cache/pbuilder/result
+APTCACHE=/var/cache/pbuilder/${DIST}-${ARCH}/aptcache
+OTHERMIRROR="deb [trusted=yes] file:///var/cache/pbuilder/${DIST}-${ARCH}/result ./"
+BINDMOUNTS=/var/cache/pbuilder/${DIST}-${ARCH}/result
 EXTRAPACKAGES="apt-utils"
+
+if [ ! -d ${BINDMOUNTS} ]; then
+    mkdir -p ${BINDMOUNTS}
+    touch ${BINDMOUNTS}/Packages
+fi

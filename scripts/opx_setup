@@ -47,7 +47,7 @@ if [ "${ID}b" = b ] ; then
   # creation in one docker run invocation.
 
   rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:base sh -c 'git-pbuilder create; git-pbuilder update; echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
+  docker run --cidfile ${CIDFILE} --privileged docker-opx:base sh -c 'export DIST=jessie; export ARCH=amd64; git-pbuilder create; git-pbuilder update; echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
   docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' `cat ${CIDFILE}` docker-opx:latest
   docker rm `cat ${CIDFILE}`
 
