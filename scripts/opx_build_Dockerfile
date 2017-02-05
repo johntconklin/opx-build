@@ -1,7 +1,11 @@
 FROM debian:jessie
+RUN echo "deb http://deb.debian.org/debian jessie-backports main" >> /etc/apt/sources.list
 RUN apt-get update 
 RUN apt-get upgrade -y
-RUN apt-get install -y git-buildpackage dh-autoreconf dh-systemd vim wget lsb-release
+RUN apt-get install -y git-buildpackage dh-autoreconf dh-systemd vim wget lsb-release debian-archive-keyring ubuntu-archive-keyring
+
+# Install backported debootstrap to gain access to xenial rootfs images
+RUN apt-get -t jessie-backports install -y debootstrap
 
 RUN echo "Cmnd_Alias PBUILDER = /usr/sbin/pbuilder, /usr/bin/pdebuild, /usr/bin/debuild-pbuilder, /usr/sbin/cowbuilder" >> /etc/sudoers
 RUN echo "Defaults!PBUILDER	env_keep+=\"DIST ARCH\"" >> /etc/sudoers

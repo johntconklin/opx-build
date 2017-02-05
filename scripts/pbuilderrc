@@ -9,11 +9,15 @@ case "${DIST}" in
   jessie|stretch|sid)
     MIRRORSITE=http://httpredir.debian.org/debian
     COMPONENTS="main contrib non-free"
+    DEBOOTSTRAPOPTS=("${DEBOOTSTRAPOPTS[@]}"
+        "--keyring=/usr/share/keyrings/debian-archive-keyring.gpg")
     : ${ARCH:="amd64"}
     ;;
   xenial)
     MIRRORSITE=http://archive.ubuntu.com/ubuntu
     COMPONENTS="main restricted universe multiverse"
+    DEBOOTSTRAPOPTS=("${DEBOOTSTRAPOPTS[@]}"
+        "--keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg")
     : ${ARCH:="amd64"}
     ;;
   *)
