@@ -48,12 +48,24 @@ if [ "${ID}b" = b ] ; then
 
   rm -f ${CIDFILE}
   docker run --cidfile ${CIDFILE} --privileged docker-opx:base sh -c 'export DIST=jessie; export ARCH=amd64; git-pbuilder create; git-pbuilder update; echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
+  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' `cat ${CIDFILE}` docker-opx:stamp1
+  docker rm `cat ${CIDFILE}`
+
+  rm -f ${CIDFILE}
+  docker run --cidfile ${CIDFILE} --privileged docker-opx:stamp1 sh -c 'export DIST=stretch; export ARCH=amd64; git-pbuilder create; git-pbuilder update; echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
+  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' `cat ${CIDFILE}` docker-opx:stamp2
+  docker rm `cat ${CIDFILE}`
+
+  rm -f ${CIDFILE}
+  docker run --cidfile ${CIDFILE} --privileged docker-opx:stamp2 sh -c 'export DIST=xenial; export ARCH=amd64; git-pbuilder create; git-pbuilder update; echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
   docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' `cat ${CIDFILE}` docker-opx:latest
   docker rm `cat ${CIDFILE}`
 
   # cleanup
   rm -f ${CIDFILE}
   docker rmi docker-opx:base
+  docker rmi docker-opx:stamp1
+  docker rmi docker-opx:stamp2
 fi
 
 echo "OPX Docker Image"
